@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS securecapita;
 
 SET NAMES 'UTF8MB4';
-SET TIME_ZONE = '+1';
+SET TIME_ZONE = '+1:00';
 
 USE securecapita;
 DROP TABLE IF EXISTS users;
@@ -21,7 +21,7 @@ CREATE TABLE users
     non_locked BOOLEAN      DEFAULT TRUE,
     using_mfa  BOOLEAN      DEFAULT FALSE,
     created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
-    image_url  VARCHAR(255) DEFAULT 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.deviantart.com%2Fharleymk%2Fart%2FMy-Joker-Default-Avatar-289867306&psig=AOvVaw0BGZ8I7uNRgzWnNuN2gXN0&ust=1697813213852000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCPj_rp6tgoIDFQAAAAAdAAAAABAE',
+    image_url  VARCHAR(255) DEFAULT 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
     CONSTRAINT UQ_users_email UNIQUE (email)
 
 
@@ -57,15 +57,17 @@ DROP TABLE IF EXISTS Events;
 CREATE TABLE Events
 (
     id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    type        VARCHAR(50)     CHECK ( type IN ('LOGIN_ATTEMPT','LOGIN_ATTEMPT_FAILURE', 'LOGIN_ATTEMPT_SUCCESS', 'PROFILE_UPDATE','PROFILE_PICTURE_UPDATE','ROLE_UPDATE', 'ACCOUNT_SETTINGS_UPDATE','PASSWORD_UPDATE', 'MFA_UPDATE') ),
+    type        VARCHAR(50) CHECK ( type IN ('LOGIN_ATTEMPT', 'LOGIN_ATTEMPT_FAILURE', 'LOGIN_ATTEMPT_SUCCESS',
+                                             'PROFILE_UPDATE', 'PROFILE_PICTURE_UPDATE', 'ROLE_UPDATE',
+                                             'ACCOUNT_SETTINGS_UPDATE', 'PASSWORD_UPDATE', 'MFA_UPDATE') ),
     description VARCHAR(255)    NOT NULL,
     CONSTRAINT UQ_Events_Type UNIQUE (type)
 
 
 );
 
-DROP TABLE IF EXISTS UserEvents;
-CREATE TABLE UserEvents
+DROP TABLE IF EXISTS User_Events;
+CREATE TABLE User_Events
 (
     id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id    BIGINT UNSIGNED NOT NULL,
@@ -79,14 +81,40 @@ CREATE TABLE UserEvents
 
 );
 
-DROP TABLE IF EXISTS AccountVerification;
-CREATE TABLE AccountVerification
+DROP TABLE IF EXISTS Account_Verification;
+CREATE TABLE Account_Verification
 (
     id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
-    url     VARCHAR(255) DEFAULT NULL,
+    url     VARCHAR(255)    NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT UQ_AccountVerification_User_Id UNIQUE (user_id),
     CONSTRAINT UQ_AccountVerification_Url UNIQUE (url)
+
+);
+
+DROP TABLE IF EXISTS Reset_Password_Verification;
+CREATE TABLE Reset_Password_Verification
+(
+    id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    url     VARCHAR(255)    NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UQ_AccountVerification_User_Id UNIQUE (user_id),
+    CONSTRAINT UQ_AccountVerification_Url UNIQUE (url)
+
+);
+
+
+DROP TABLE IF EXISTS Two_Factor_Verification;
+CREATE TABLE Two_Factor_Verification
+(
+    id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    code     VARCHAR(10)    NOT NULL,
+    expiration_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT UQ_AccountVerification_User_Id UNIQUE (user_id),
+    CONSTRAINT UQ_AccountVerification_Url UNIQUE (code)
 
 );
