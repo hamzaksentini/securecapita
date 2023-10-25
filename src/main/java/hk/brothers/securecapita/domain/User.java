@@ -6,11 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,14 +16,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
     private Long id;
     @NotEmpty(message = "First name cannot be empty")
     private String firstName;
     @NotEmpty(message = "Last Name cannot be empty")
     private String lastName;
     @NotEmpty(message = "Email name cannot be empty")
+    @Email(message = "Invalid email. Please enter a valid email address")
     private String email;
     @NotEmpty(message = "Password name cannot be empty")
     private String password;
