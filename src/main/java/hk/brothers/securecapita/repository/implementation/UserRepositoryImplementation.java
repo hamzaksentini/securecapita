@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Map;
 
+import static hk.brothers.securecapita.enumeration.RoleType.ROLE_USER;
 import static hk.brothers.securecapita.query.UserQuery.*;
 
 import static java.util.Objects.requireNonNull;

@@ -1,5 +1,11 @@
 package hk.brothers.securecapita.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import javax.validation.constraints.NotEmpty;
 
 @Data
@@ -10,9 +16,7 @@ import javax.validation.constraints.NotEmpty;
 public class Role {
 
     private Long id;
-    @NotEmpty(message = "First name cannot be empty")
-    private String firstName;
-    @NotEmpty(message = "Last Name cannot be empty")
-    private String lastName;
+    private String name;
+    private String permission;
 
 }
