@@ -21,14 +21,13 @@ import java.util.UUID;
 
 import static hk.brothers.securecapita.enumeration.RoleType.ROLE_USER;
 import static hk.brothers.securecapita.enumeration.VerificationType.ACCOUNT;
-import static hk.brothers.securecapita.query.UserQuery.COUNT_USER_EMAIL_QUERY;
-import static hk.brothers.securecapita.query.UserQuery.INSERT_USER_QUERY;
+import static hk.brothers.securecapita.query.UserQuery.*;
 import static java.util.Objects.requireNonNull;
 
 @Repository
 @AllArgsConstructor
 @Slf4j
-public class UserRepositoryImplementation implements UserRepository<User> {
+public class UserRepositoryImpl implements UserRepository<User> {
 
 
     private final NamedParameterJdbcTemplate jdbc;
@@ -49,10 +48,19 @@ public class UserRepositoryImplementation implements UserRepository<User> {
             roleRepository.addRoleToUser(user.getId(), ROLE_USER.name());
             // Send verification URL
             String verificationUrl = getVerificationUrl(UUID.randomUUID().toString(), ACCOUNT.getType());
+            // Save URL in verification table
+            jdbc.update(INSERT_ACCOUNT_VERIFICATION_URL_QUERY,Map.of("userId", user.getId(),"url", verificationUrl));
+            //mssing the email sender part
+            user.setEnabled(false);
+            user.setNotLocked(true);
+            return user;
         } catch (EmptyResultDataAccessException exception) {
+            throw new ApiException("No Role found by name: " + ROLE_USER.name());
+
         } catch (Exception e) {
+            throw new ApiException("An error occurred please try again.");
         }
-        return user;
+
     }
 
     @Override
