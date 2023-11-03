@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collection;
 import java.util.Map;
@@ -97,6 +98,6 @@ public class UserRepositoryImpl implements UserRepository<User> {
     }
 
     private String getVerificationUrl(String key, String type) {
-        return key;
+        return ServletUriComponentsBuilder.fromCurrentContextPath().path("/user/verify/" + type + "*" + key).toUriString();
     }
 }
